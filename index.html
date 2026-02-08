@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity → Light</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 6em;
+            font-weight: 900;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            }
+            to {
+                text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        .hero .arrow {
+            font-size: 4em;
+            margin: 0 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        .hero p {
+            font-size: 1.8em;
+            margin-top: 30px;
+            opacity: 0.9;
+            max-width: 700px;
+        }
+
+        /* Interactive Demo Section */
+        .demo-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        .demo-title {
+            font-size: 3em;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .gravity-simulator {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .pulley-system {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+        }
+
+        .rope {
+            width: 4px;
+            height: 300px;
+            background: linear-gradient(180deg, #8B4513 0%, #654321 100%);
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .weight {
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(135deg, #757575 0%, #424242 100%);
+            border-radius: 10px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: top 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .weight.dropping {
+            top: 300px;
+        }
+
+        .gear-container {
+            position: absolute;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .gear {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #FFD700 30%, #FFA500 100%);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transition: transform 0.1s linear;
+        }
+
+        .gear::before {
+            content: '⚙️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+        }
+
+        .gear.spinning {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .bulb-container {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bulb {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #FFE135 0%, #FFA500 50%, #8B4513 100%);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 20px rgba(255, 225, 53, 0.3);
+        }
+
+        .bulb::before {
+            content: '💡';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            filter: grayscale(100%);
+            transition: filter 0.5s;
+        }
+
+        .bulb.glowing {
+            background: radial-gradient(circle, #FFFF00 0%, #FFD700 40%, #FFA500 100%);
+            box-shadow: 0 0 60px rgba(255, 255, 0, 0.9), 0 0 100px rgba(255, 215, 0, 0.6);
+            animation: glow-pulse 1s infinite alternate;
+        }
+
+        .bulb.glowing::before {
+            filter: grayscale(0%);
+        }
+
+        @keyframes glow-pulse {
+            from {
+                box-shadow: 0 0 60px rgba(255, 255, 0, 0.9), 0 0 100px rgba(255, 215, 0, 0.6);
+            }
+            to {
+                box-shadow: 0 0 80px rgba(255, 255, 0, 1), 0 0 120px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .control-button {
+            margin-top: 50px;
+            padding: 25px 60px;
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1e3c72;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.4);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 165, 0, 0.6);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        .how-it-works h2 {
+            font-size: 3em;
+            margin-bottom: 60px;
+        }
+
+        .steps {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .step {
+            text-align: center;
+            max-width: 250px;
+        }
+
+        .step-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .step:nth-child(2) .step-icon {
+            animation-delay: 0.5s;
+        }
+
+        .step:nth-child(3) .step-icon {
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .step h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+
+        .step p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .energy-note {
+            margin-top: 50px;
+            font-size: 1.5em;
+            font-style: italic;
+            opacity: 0.8;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        /* Experience Section */
+        .experience-section {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #141E30 0%, #243B55 100%);
+        }
+
+        .experience-section h2 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .experience-subtitle {
+            font-size: 1.5em;
+            opacity: 0.8;
+            margin-bottom: 50px;
+        }
+
+        .experience-button {
+            padding: 30px 70px;
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(255, 65, 108, 0.4);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: pulse-button 2s infinite;
+        }
+
+        @keyframes pulse-button {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .experience-button:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(255, 65, 108, 0.6);
+        }
+
+        .experience-button:active {
+            transform: translateY(-2px);
+        }
+
+        /* Blackout Overlay */
+        .blackout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInBlack 1s ease;
+        }
+
+        .blackout-overlay.active {
+            display: flex;
+        }
+
+        .blackout-overlay.shaking {
+            animation: earthquake 0.5s ease-in-out;
+        }
+
+        @keyframes earthquake {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            10% {
+                transform: translate(-10px, -10px);
+            }
+            20% {
+                transform: translate(10px, 10px);
+            }
+            30% {
+                transform: translate(-10px, 10px);
+            }
+            40% {
+                transform: translate(10px, -10px);
+            }
+            50% {
+                transform: translate(-10px, -10px);
+            }
+            60% {
+                transform: translate(10px, 10px);
+            }
+            70% {
+                transform: translate(-10px, 10px);
+            }
+            80% {
+                transform: translate(10px, -10px);
+            }
+            90% {
+                transform: translate(-5px, 5px);
+            }
+        }
+
+        @keyframes fadeInBlack {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .blackout-content {
+            text-align: center;
+            padding: 40px;
+            max-width: 900px;
+        }
+
+        .blackout-content.shaking {
+            animation: contentShake 0.3s ease-in-out infinite;
+        }
+
+        @keyframes contentShake {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(-5px, 5px) rotate(-1deg);
+            }
+            50% {
+                transform: translate(5px, -5px) rotate(1deg);
+            }
+            75% {
+                transform: translate(-5px, -5px) rotate(-0.5deg);
+            }
+        }
+
+        .blackout-step {
+            display: none;
+        }
+
+        .blackout-step.active {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .blackout-step h1 {
+            font-size: 3.5em;
+            margin: 30px 0;
+            color: #fff;
+            opacity: 0;
+        }
+
+        .blackout-step h1.fade-in {
+            animation: textFadeIn 1.5s ease forwards;
+        }
+
+        .blackout-step h1.fade-in.shake {
+            animation: textFadeInShake 1.5s ease forwards;
+        }
+
+        .blackout-step h1.delay-1 {
+            animation-delay: 1.5s;
+        }
+
+        .blackout-step h1.delay-2 {
+            animation-delay: 3s;
+        }
+
+        @keyframes textFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes textFadeInShake {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            10% {
+                transform: translateX(20px);
+            }
+            20% {
+                transform: translateX(-15px);
+            }
+            30% {
+                transform: translateX(15px);
+            }
+            40% {
+                transform: translateX(-10px);
+            }
+            50% {
+                transform: translateX(10px);
+            }
+            60% {
+                transform: translateX(-5px);
+            }
+            70% {
+                transform: translateX(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .disaster-warning {
+            color: #FF0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            animation: warningFlash 0.5s ease-in-out infinite;
+        }
+
+        @keyframes warningFlash {
+            0%, 100% {
+                opacity: 1;
+                text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            }
+            50% {
+                opacity: 0.5;
+                text-shadow: 0 0 40px rgba(255, 0, 0, 1);
+            }
+        }
+
+        .blackout-step h2 {
+            font-size: 2.5em;
+            color: #fff;
+            margin-bottom: 50px;
+        }
+
+        .light-options {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 60px;
+        }
+
+        .light-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            padding: 40px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 200px;
+            color: white;
+        }
+
+        .light-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .light-option.gravity {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .light-option.gravity:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .option-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .option-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .result-icon {
+            font-size: 8em;
+            margin-bottom: 30px;
+        }
+
+        .result-icon.dying {
+            animation: die 2s ease;
+            opacity: 0.3;
+        }
+
+        @keyframes die {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            20% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            40% {
+                transform: scale(0.95) rotate(-5deg);
+            }
+            60% {
+                transform: scale(0.9) rotate(3deg);
+            }
+            80% {
+                transform: scale(0.85) rotate(-2deg);
+            }
+            100% {
+                opacity: 0.3;
+                transform: scale(0.8) rotate(0deg);
+                filter: grayscale(100%);
+            }
+        }
+
+        .result-icon.failing {
+            animation: fail 2s ease;
+            opacity: 0.3;
+        }
+
+        @keyframes fail {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            25% {
+                opacity: 0.7;
+                transform: translateY(-20px);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+            75% {
+                opacity: 0.4;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 0.3;
+                transform: translateY(0);
+                filter: grayscale(100%);
+            }
+        }
+
+        .result-icon.winning {
+            animation: win 1.5s ease;
+        }
+
+        @keyframes win {
+            0% {
+                transform: scale(0.5) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3) rotate(10deg);
+            }
+            70% {
+                transform: scale(0.9) rotate(-5deg);
+            }
+            85% {
+                transform: scale(1.1) rotate(2deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .glow-text {
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5);
+            animation: textGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from {
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.7);
+            }
+        }
+
+        .blackout-step p {
+            font-size: 1.8em;
+            color: #fff;
+            opacity: 0;
+            margin: 20px 0;
+        }
+
+        .blackout-step p.fade-in {
+            animation: textFadeIn 1s ease forwards;
+        }
+
+        .blackout-step p.delay-1 {
+            animation-delay: 1s;
+        }
+
+        .blackout-step p.delay-2 {
+            animation-delay: 2s;
+        }
+
+        .big-text {
+            font-size: 2.5em !important;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .try-again, .close-button {
+            margin-top: 50px;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .try-again:hover, .close-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .close-button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-color: #FFD700;
+            color: #000;
+        }
+
+        .close-button:hover {
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Red flash effect for disaster */
+        @keyframes redFlash {
+            0%, 100% {
+                background: #000;
+            }
+            50% {
+                background: #330000;
+            }
+        }
+
+        .blackout-overlay.red-flash {
+            animation: redFlash 0.2s ease-in-out 3;
+        }
+
+        /* Screen flicker effect */
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 1;
+            }
+            25% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            75% {
+                opacity: 0.2;
+            }
+        }
+
+        .blackout-content.flicker {
+            animation: flicker 0.3s ease-in-out 4;
+        }
+
+        /* Impact Section */
+        .impact-section {
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);
+        }
+
+        .impact-section h2 {
+            font-size: 3em;
+            margin-bottom: 40px;
+            color: #FFD700;
+        }
+
+        .impact-content {
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .impact-content p {
+            font-size: 1.8em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            padding: 20px 40px;
+            border-radius: 20px;
+            border: 2px solid #FFD700;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* AI Section */
+        .ai-section {
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            text-align: center;
+        }
+
+        .ai-section h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .ai-section p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            background: #0f2027;
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3em;
+            }
+            
+            .hero .arrow {
+                font-size: 2em;
+                margin: 0 15px;
+            }
+            
+            .hero p {
+                font-size: 1.3em;
+            }
+            
+            .gravity-simulator {
+                width: 320px;
+                height: 500px;
+            }
+            
+            .steps {
+                gap: 40px;
+            }
+            
+            .demo-title, .how-it-works h2, .impact-section h2 {
+                font-size: 2em;
+            }
+
+            .experience-section h2 {
+                font-size: 2.2em;
+            }
+
+            .experience-button {
+                padding: 20px 40px;
+                font-size: 1.3em;
+            }
+
+            .blackout-step h1 {
+                font-size: 2em;
+            }
+
+            .blackout-step h2 {
+                font-size: 1.8em;
+            }
+
+            .light-options {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .light-option {
+                min-width: 100%;
+            }
+
+            .result-icon {
+                font-size: 5em;
+            }
+
+            .big-text {
+                font-size: 1.8em !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>
+            GRAVITY <span class="arrow">→</span> LIGHT
+        </h1>
+        <p>Turning gravitational energy into electricity.</p>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="demo-section">
+        <h2 class="demo-title">See It In Action</h2>
+        
+        <div class="gravity-simulator">
+            <div class="pulley-system">
+                <div class="rope">
+                    <div class="weight" id="weight">🧱</div>
+                </div>
+            </div>
+            
+            <div class="gear-container">
+                <div class="gear" id="gear"></div>
+            </div>
+            
+            <div class="bulb-container">
+                <div class="bulb" id="bulb"></div>
+            </div>
+        </div>
+        
+        <button class="control-button" id="dropButton" onclick="dropWeight()">
+            ▶ DROP THE WEIGHT
+        </button>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">🧱</div>
+                <h3>Weight Falls</h3>
+                <p>Gravity pulls the weight downward</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-icon">⚙️</div>
+                <h3>Gear Spins</h3>
+                <p>Energy transfers to rotating motion</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-icon">💡</div>
+                <h3>Light Turns On</h3>
+                <p>Generator converts motion to electricity</p>
+            </div>
+        </div>
+        
+        <div class="energy-note">
+            Energy is transferred, not created.
+        </div>
+    </section>
+
+    <!-- Experience Power Cut Section -->
+    <section class="experience-section">
+        <h2>⚡ Experience a Power Cut</h2>
+        <p class="experience-subtitle">Feel what happens when disaster strikes</p>
+        
+        <button class="experience-button" onclick="startExperience()">
+            🌑 START SIMULATION
+        </button>
+    </section>
+
+    <!-- Blackout Overlay (Hidden initially) -->
+    <div id="blackoutOverlay" class="blackout-overlay">
+        <div class="blackout-content" id="blackoutContent">
+            <div id="blackoutStep1" class="blackout-step active">
+                <h1 class="fade-in shake disaster-warning">⚠️ A DISASTER HITS ⚠️</h1>
+                <h1 class="fade-in shake delay-1">POWER IS GONE.</h1>
+                <h1 class="fade-in shake delay-2">IT'S NIGHT.</h1>
+            </div>
+            
+            <div id="blackoutStep2" class="blackout-step">
+                <h2>What light would you trust right now?</h2>
+                <div class="light-options">
+                    <button class="light-option" onclick="selectLight('battery')">
+                        <div class="option-icon">🔋</div>
+                        <div class="option-name">Battery Light</div>
+                    </button>
+                    <button class="light-option" onclick="selectLight('solar')">
+                        <div class="option-icon">☀️</div>
+                        <div class="option-name">Solar Light</div>
+                    </button>
+                    <button class="light-option gravity" onclick="selectLight('gravity')">
+                        <div class="option-icon">⚡</div>
+                        <div class="option-name">Gravity Light</div>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="blackoutStep3Battery" class="blackout-step">
+                <div class="result-icon dying">🔋</div>
+                <h2 class="fade-in">Battery dies...</h2>
+                <p class="fade-in delay-1">Limited power. No way to recharge.</p>
+                <button class="try-again" onclick="resetExperience()">Try Again</button>
+            </div>
+            
+            <div id="blackoutStep3Solar" class="blackout-step">
+                <div class="result-icon failing">☀️</div>
+                <h2 class="fade-in">No sunlight...</h2>
+                <p class="fade-in delay-1">It's nighttime. Solar can't help you now.</p>
+                <button class="try-again" onclick="resetExperience()">Try Again</button>
+            </div>
+            
+            <div id="blackoutStep3Gravity" class="blackout-step">
+                <div class="result-icon winning">💡</div>
+                <h2 class="fade-in glow-text">Light shines!</h2>
+                <p class="fade-in delay-1 big-text">Gravity never turns off.</p>
+                <p class="fade-in delay-2">Just pull the weight. Power whenever you need it.</p>
+                <button class="close-button" onclick="closeExperience()">Close ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Section -->
+    <section class="impact-section">
+        <h2>Real-World Impact</h2>
+        
+        <div class="impact-content">
+            <p>Useful in off-grid areas where electricity is limited.</p>
+            
+            <div class="stat">
+                ⚡ Works without batteries or fuel
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Section -->
+    <section class="ai-section">
+        <h3>🤖 AI Tools Used</h3>
+        <p>Claude AI for design optimization, simulation logic, and interactive animations</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Gravity Light Project 2026 | Sustainable Energy for All</p>
+    </footer>
+
+    <script>
+        let isAnimating = false;
+
+        function dropWeight() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            const button = document.getElementById('dropButton');
+            const weight = document.getElementById('weight');
+            const gear = document.getElementById('gear');
+            const bulb = document.getElementById('bulb');
+            
+            // Disable button
+            button.disabled = true;
+            button.textContent = 'DROPPING...';
+            
+            // Start animations
+            weight.classList.add('dropping');
+            gear.classList.add('spinning');
+            
+            // Light bulb glows after 1 second
+            setTimeout(() => {
+                bulb.classList.add('glowing');
+            }, 1000);
+            
+            // Reset after 5 seconds
+            setTimeout(() => {
+                weight.classList.remove('dropping');
+                gear.classList.remove('spinning');
+                bulb.classList.remove('glowing');
+                button.disabled = false;
+                button.textContent = '▶ DROP THE WEIGHT';
+                isAnimating = false;
+            }, 5000);
+        }
+
+        // Blackout Experience Functions
+        function startExperience() {
+            const overlay = document.getElementById('blackoutOverlay');
+            const content = document.getElementById('blackoutContent');
+            
+            overlay.classList.add('active');
+            
+            // Red flash effect (simulating emergency)
+            setTimeout(() => {
+                overlay.classList.add('red-flash');
+            }, 100);
+            
+            // Earthquake shake effect
+            setTimeout(() => {
+                overlay.classList.add('shaking');
+                setTimeout(() => {
+                    overlay.classList.remove('shaking');
+                }, 500);
+            }, 600);
+            
+            // Another shake
+            setTimeout(() => {
+                overlay.classList.add('shaking');
+                setTimeout(() => {
+                    overlay.classList.remove('shaking');
+                }, 500);
+            }, 1800);
+            
+            // Flicker effect on content
+            setTimeout(() => {
+                content.classList.add('flicker');
+                setTimeout(() => {
+                    content.classList.remove('flicker');
+                }, 1200);
+            }, 2500);
+            
+            // Final shake before going to step 2
+            setTimeout(() => {
+                overlay.classList.add('shaking');
+                setTimeout(() => {
+                    overlay.classList.remove('shaking');
+                }, 500);
+            }, 4500);
+            
+            // After intense sequence, move to step 2
+            setTimeout(() => {
+                document.getElementById('blackoutStep1').classList.remove('active');
+                document.getElementById('blackoutStep2').classList.add('active');
+            }, 6000);
+        }
+
+        function selectLight(type) {
+            const content = document.getElementById('blackoutContent');
+            document.getElementById('blackoutStep2').classList.remove('active');
+            
+            if (type === 'battery') {
+                // Shake when battery fails
+                const overlay = document.getElementById('blackoutOverlay');
+                overlay.classList.add('shaking');
+                setTimeout(() => {
+                    overlay.classList.remove('shaking');
+                }, 500);
+                
+                document.getElementById('blackoutStep3Battery').classList.add('active');
+            } else if (type === 'solar') {
+                // Flicker when solar fails
+                content.classList.add('flicker');
+                setTimeout(() => {
+                    content.classList.remove('flicker');
+                }, 900);
+                
+                document.getElementById('blackoutStep3Solar').classList.add('active');
+            } else if (type === 'gravity') {
+                // Success - remove all negative effects
+                const overlay = document.getElementById('blackoutOverlay');
+                overlay.classList.remove('shaking', 'red-flash');
+                content.classList.remove('flicker', 'shaking');
+                
+                document.getElementById('blackoutStep3Gravity').classList.add('active');
+            }
+        }
+
+        function resetExperience() {
+            const overlay = document.getElementById('blackoutOverlay');
+            const content = document.getElementById('blackoutContent');
+            
+            // Remove all effect classes
+            overlay.classList.remove('shaking', 'red-flash');
+            content.classList.remove('flicker', 'shaking');
+            
+            // Hide all steps
+            document.querySelectorAll('.blackout-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show step 2 again
+            document.getElementById('blackoutStep2').classList.add('active');
+        }
+
+        function closeExperience() {
+            const overlay = document.getElementById('blackoutOverlay');
+            const content = document.getElementById('blackoutContent');
+            
+            // Remove all effect classes
+            overlay.classList.remove('shaking', 'red-flash');
+            content.classList.remove('flicker', 'shaking');
+            
+            overlay.classList.remove('active');
+            
+            // Reset all steps
+            setTimeout(() => {
+                document.querySelectorAll('.blackout-step').forEach(step => {
+                    step.classList.remove('active');
+                });
+                document.getElementById('blackoutStep1').classList.add('active');
+            }, 500);
+        }
+
+        // Add particle effect on hover
+        const simulator = document.querySelector('.gravity-simulator');
+        simulator.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.transition = 'transform 0.3s';
+        });
+        
+        simulator.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    </script>
+</body>
+</html>
